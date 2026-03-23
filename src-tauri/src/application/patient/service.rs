@@ -84,7 +84,7 @@ mod test {
                 .unwrap(),
         };
 
-        repo.save(patient);
+        repo.save(patient).unwrap();
 
         let service = PatientService::new(repo);
         service
@@ -103,7 +103,7 @@ mod test {
                     .unwrap(),
             };
 
-            repo.save(patient);
+            repo.save(patient).unwrap();
         }
 
         let service = PatientService::new(repo);
