@@ -1,3 +1,5 @@
+use chrono::Utc;
+
 use super::*;
 
 impl PatientService {
@@ -21,6 +23,9 @@ impl PatientService {
             name,
             phone1,
             phone2,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+            deleted_at: None,
         };
 
         self.repo.save(&patient)?;

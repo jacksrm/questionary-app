@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, Utc};
 
 use crate::application::patient::repository::in_memory::InMemoryUserRepository;
 
@@ -35,6 +35,9 @@ fn service_factory_single() -> PatientService {
         phone1: PATIENT_PHONE1.to_string(),
         phone2: Some(PATIENT_PHONE2.to_string()),
         birth_date: NaiveDate::parse_from_str(PATIENT_BIRTH_DATE, PATIENT_BIRTH_DATE_FMT).unwrap(),
+        created_at: Utc::now(),
+        updated_at: Utc::now(),
+        deleted_at: None,
     };
 
     repo.save(&patient).unwrap();
@@ -54,6 +57,9 @@ fn service_factory_many() -> PatientService {
             phone2: Some(PATIENT_PHONE2.to_string()),
             birth_date: NaiveDate::parse_from_str(PATIENT_BIRTH_DATE, PATIENT_BIRTH_DATE_FMT)
                 .unwrap(),
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+            deleted_at: None,
         };
 
         repo.save(&patient).unwrap();

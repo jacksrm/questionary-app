@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 #[derive(Debug, PartialEq)]
 pub enum PatientError {
     CpfAlreadyInUse,

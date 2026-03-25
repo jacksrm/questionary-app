@@ -1,3 +1,4 @@
+use chrono::Utc;
 use uuid::Uuid;
 
 use crate::{
@@ -29,33 +30,44 @@ impl PatientRepository for InMemoryUserRepository {
         Ok(())
     }
 
-    fn delete(&mut self, id: &Uuid) -> Result<Patient, PatientError> {
-        let to_remove = self.data.iter().position(|p| p.id == *id);
-        if to_remove.is_none() {
-            return Err(PatientError::RepositoryError(
-                "Couldn't remove the Patient with the specified ID".to_string(),
-            ));
+    fn delete(&mut self, id: &Uuid) -> Result<&Patient, PatientError> {
+        let to_remove = self.data.iter_mut().find(|p| p.id == *id);
+        if let Some(patient) = to_remove {
+            patient.deleted_at = Some(Utc::now());
+            return Ok(patient);
         }
-        Ok(self.data.remove(to_remove.unwrap()))
+
+        Err(PatientError::RepositoryError(
+            "Patient not found with provided ID".to_string(),
+        ))
     }
 
     fn find_by_id(&self, id: &Uuid) -> Option<&Patient> {
-        self.data.iter().find(|p| p.id == *id)
+        self.data
+            .iter()
+            .find(|p| p.id == *id && p.deleted_at.is_none())
     }
 
     fn find_by_cpf(&self, cpf: &str) -> Option<&Patient> {
-        self.data.iter().find(|p| p.cpf == cpf)
+        self.data
+            .iter()
+            .find(|p| p.cpf == cpf && p.deleted_at.is_none())
     }
 
     fn find_by_name(&self, name: &str) -> Vec<&Patient> {
         self.data
             .iter()
-            .filter(|p| p.name.to_lowercase().contains(&name.to_lowercase()))
+            .filter(|p| {
+                p.name.to_lowercase().contains(&name.to_lowercase()) && p.deleted_at.is_none()
+            })
             .collect()
     }
 
     fn get_all(&self) -> Vec<&Patient> {
-        self.data.iter().collect()
+        self.data
+            .iter()
+            .filter(|p| p.deleted_at.is_none())
+            .collect()
     }
 }
 
