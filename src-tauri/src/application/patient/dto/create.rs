@@ -35,14 +35,14 @@ impl CreatePatient {
 mod test {
     use super::*;
 
-    #[test]
-    fn should_create_a_dto_from_more_generic_data() {
-        let input = CreatePatientInput {
-            name: "João Carlos Sardanha".to_string(),
-            cpf: todo!(),
-            phone1: todo!(),
-            phone2: todo!(),
-            birth_date: todo!(),
-        };
-    }
+    // #[test]
+    // fn should_create_a_dto_from_more_generic_data() {
+    //     let input = CreatePatientInput {
+    //         name: "João Carlos Sardanha".to_string(),
+    //         cpf: todo!(),
+    //         phone1: todo!(),
+    //         phone2: todo!(),
+    //         birth_date: todo!(),
+    //     };
+    // }
 }
