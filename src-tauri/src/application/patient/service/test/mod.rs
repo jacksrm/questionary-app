@@ -71,6 +71,7 @@ fn service_factory_many() -> PatientService {
 }
 
 mod create;
+mod delete;
 mod get;
 mod get_all;
 mod update;
