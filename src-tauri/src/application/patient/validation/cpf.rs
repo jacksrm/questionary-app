@@ -1,4 +1,4 @@
-fn cpf_format(cpf: &str) -> bool {
+fn correct_cpf_mask(cpf: &str) -> bool {
     let chars: Vec<char> = cpf.chars().collect();
 
     if chars.len() != 14 {
@@ -31,7 +31,7 @@ fn cpf_format(cpf: &str) -> bool {
 }
 
 pub fn validate_cpf(cpf: &str) -> bool {
-    if !cpf_format(cpf) {
+    if !correct_cpf_mask(cpf) {
         return false;
     }
 
@@ -163,16 +163,16 @@ mod test {
     #[test]
     fn should_check_if_cpf_format_is_valid() {
         for cpf in VALID_CPF_LIST.iter() {
-            assert!(cpf_format(cpf));
+            assert!(correct_cpf_mask(cpf));
         }
     }
 
     #[test]
     fn should_check_if_cpf_format_is_invalid() {
-        assert!(!cpf_format("12345678909"));
-        assert!(!cpf_format("123.456.78909"));
-        assert!(!cpf_format("123.456.789-0"));
-        assert!(!cpf_format("123.456.789-0a"));
+        assert!(!correct_cpf_mask("12345678909"));
+        assert!(!correct_cpf_mask("123.456.78909"));
+        assert!(!correct_cpf_mask("123.456.789-0"));
+        assert!(!correct_cpf_mask("123.456.789-0a"));
     }
 
     #[test]

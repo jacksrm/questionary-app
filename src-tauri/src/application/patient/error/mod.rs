@@ -5,4 +5,10 @@ pub enum PatientError {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum ValidationError {}
+pub enum ValidationError {
+    InvalidCpfField,
+    InvalidNameField,
+    InvalidPhone1Field,
+    InvalidPhone2Field,
+    InvalidBirthDateField,
+}
