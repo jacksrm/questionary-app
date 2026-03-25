@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::application::patient::dto::{CreatePatient, UpdatePatient};
+use crate::application::patient::dto::{create::CreatePatient, UpdatePatient};
 use crate::application::patient::repository::PatientRepository;
 use crate::domain::patient::Patient;
 

@@ -1,14 +1,6 @@
 use chrono::NaiveDate;
 use uuid::Uuid;
 
-pub struct CreatePatient {
-    pub name: String,
-    pub cpf: String,
-    pub phone1: String,
-    pub phone2: Option<String>,
-    pub birth_date: NaiveDate,
-}
-
 #[derive(Clone)]
 pub struct UpdatePatient {
     pub id: Uuid,
@@ -23,3 +15,5 @@ pub enum GetPatientBy {
     Id(Uuid),
     Cpf(String),
 }
+
+pub mod create;

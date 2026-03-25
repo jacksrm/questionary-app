@@ -1,6 +1,6 @@
 use chrono::NaiveDate;
 
-use crate::application::patient::{dto::CreatePatient, error::PatientError};
+use crate::application::patient::{dto::create::CreatePatient, error::PatientError};
 
 use super::*;
 
