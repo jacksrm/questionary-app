@@ -63,11 +63,12 @@ impl PatientRepository for InMemoryUserRepository {
             .collect()
     }
 
-    fn get_all(&self) -> Vec<&Patient> {
-        self.data
+    fn get_all(&self) -> Result<Vec<&Patient>, PatientError> {
+        Ok(self
+            .data
             .iter()
             .filter(|p| p.deleted_at.is_none())
-            .collect()
+            .collect())
     }
 }
 

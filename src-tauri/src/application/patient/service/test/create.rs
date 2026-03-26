@@ -13,7 +13,7 @@ fn should_be_able_to_create_a_patient() {
 
     service.create(to_create).unwrap();
 
-    assert_eq!(service.repo.get_all().len(), 1);
+    assert_eq!(service.repo.get_all().unwrap().len(), 1);
 }
 
 #[test]

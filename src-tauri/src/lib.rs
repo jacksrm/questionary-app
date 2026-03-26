@@ -18,7 +18,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             sum,
-            patient::do_something_stupid
+            patient::do_something_stupid,
+            patient::get_all
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -179,7 +179,8 @@ fn should_retrieve_all_data() {
     let db = create_db_and_setup_many();
     let result = db.get_all();
 
-    assert_eq!(result.len(), 50);
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().len(), 50);
 }
 
 #[test]
@@ -187,5 +188,6 @@ fn should_not_retrieve_deleted_data() {
     let db = create_db_and_setup_many_deleted();
     let result = db.get_all();
 
-    assert_eq!(result.len(), 25);
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().len(), 25);
 }

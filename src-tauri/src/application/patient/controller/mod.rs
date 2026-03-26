@@ -1,6 +1,10 @@
-use crate::application::patient::{
-    dto::create::{CreatePatient, CreatePatientInput},
-    service::PatientService,
+use crate::{
+    application::patient::{
+        dto::create::{CreatePatient, CreatePatientInput},
+        error::PatientError,
+        service::PatientService,
+    },
+    domain::patient::Patient,
 };
 
 pub struct PatientController {
@@ -12,8 +16,7 @@ impl PatientController {
         PatientController { service }
     }
 
-    // pub fn create(&self, input: CreatePatientInput) -> Result<Patient, PatientError> {
-    //     let dto = CreatePatient::new(input);
-    //     self.service.create(dto)
-    // }
+    pub fn get_all(&self) -> Result<Vec<&Patient>, PatientError> {
+        self.service.get_all()
+    }
 }

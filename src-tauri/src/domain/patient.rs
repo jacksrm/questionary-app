@@ -1,7 +1,8 @@
 use chrono::{DateTime, NaiveDate, Utc};
+use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct Patient {
     pub id: Uuid,
     pub name: String,

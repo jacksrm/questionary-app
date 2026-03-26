@@ -6,5 +6,5 @@ fn should_return_all_patients_in_the_repository() {
 
     let result = service.get_all();
 
-    assert_eq!(result.len(), 100);
+    assert_eq!(result.unwrap().len(), 100);
 }
