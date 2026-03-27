@@ -2,20 +2,20 @@ use crate::application::patient::dto::delete::DeletePatient;
 
 use super::*;
 
-#[test]
-fn should_delete_a_patient_from_repository() {
-    let mut service = service_factory_many();
+#[tokio::test]
+async fn should_delete_a_patient_from_repository() {
+    let mut service = service_factory_many().await;
 
-    let result = service.delete(DeletePatient(patient_id(1))).unwrap();
+    let result = service.delete(DeletePatient(patient_id(1))).await.unwrap();
 
     assert_eq!(result.id, patient_id(1));
     assert!(result.deleted_at.is_some());
 }
 
-#[test]
-fn should_return_an_error_if_patient_does_not_exist() {
-    let mut service = service_factory_single();
-    let result = service.delete(DeletePatient(patient_id(999)));
+#[tokio::test]
+async fn should_return_an_error_if_patient_does_not_exist() {
+    let mut service = service_factory_single().await;
+    let result = service.delete(DeletePatient(patient_id(999))).await;
 
     assert!(result.is_err());
 }

@@ -1,7 +1,7 @@
 use super::*;
 
-#[test]
-fn should_be_able_to_create_a_patient() {
+#[tokio::test]
+async fn should_be_able_to_create_a_patient() {
     let mut service = service_factory_clean();
     let to_create = CreatePatient {
         name: PATIENT_NAME.to_string(),
@@ -11,14 +11,14 @@ fn should_be_able_to_create_a_patient() {
         phone2: None,
     };
 
-    service.create(to_create).unwrap();
+    service.create(to_create).await.unwrap();
 
-    assert_eq!(service.repo.get_all().unwrap().len(), 1);
+    assert_eq!(service.repo.get_all().await.unwrap().len(), 1);
 }
 
-#[test]
-fn should_return_a_error_if_cpf_already_exists() {
-    let mut service = service_factory_single();
+#[tokio::test]
+async fn should_return_a_error_if_cpf_already_exists() {
+    let mut service = service_factory_single().await;
     let to_create = CreatePatient {
         name: PATIENT_NAME.to_string(),
         cpf: PATIENT_CPF.to_string(),
@@ -27,7 +27,7 @@ fn should_return_a_error_if_cpf_already_exists() {
         phone2: None,
     };
 
-    let result = service.create(to_create).unwrap_err();
+    let result = service.create(to_create).await.unwrap_err();
 
     assert_eq!(result, PatientError::CpfAlreadyInUse);
 }

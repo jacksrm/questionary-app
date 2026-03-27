@@ -1,3 +1,4 @@
+use async_trait::async_trait;
 use chrono::Utc;
 use uuid::Uuid;
 
@@ -16,8 +17,9 @@ impl InMemoryUserRepository {
     }
 }
 
+#[async_trait]
 impl PatientRepository for InMemoryUserRepository {
-    fn save(&mut self, patient: &Patient) -> Result<(), PatientError> {
+    async fn save(&mut self, patient: &Patient) -> Result<(), PatientError> {
         let patient = patient.clone();
         let existent_patient = self.data.iter_mut().find(|p| p.id == patient.id);
 
@@ -30,11 +32,11 @@ impl PatientRepository for InMemoryUserRepository {
         Ok(())
     }
 
-    fn delete(&mut self, id: &Uuid) -> Result<&Patient, PatientError> {
+    async fn delete(&mut self, id: &Uuid) -> Result<Patient, PatientError> {
         let to_remove = self.data.iter_mut().find(|p| p.id == *id);
         if let Some(patient) = to_remove {
             patient.deleted_at = Some(Utc::now());
-            return Ok(patient);
+            return Ok(patient.clone());
         }
 
         Err(PatientError::RepositoryError(
@@ -42,32 +44,37 @@ impl PatientRepository for InMemoryUserRepository {
         ))
     }
 
-    fn find_by_id(&self, id: &Uuid) -> Option<&Patient> {
-        self.data
+    async fn find_by_id(&self, id: &Uuid) -> Result<Option<Patient>, PatientError> {
+        Ok(self
+            .data
             .iter()
             .find(|p| p.id == *id && p.deleted_at.is_none())
+            .cloned())
     }
 
-    fn find_by_cpf(&self, cpf: &str) -> Option<&Patient> {
-        self.data
+    async fn find_by_cpf(&self, cpf: &str) -> Result<Option<Patient>, PatientError> {
+        Ok(self
+            .data
             .iter()
             .find(|p| p.cpf == cpf && p.deleted_at.is_none())
+            .cloned())
     }
 
-    fn find_by_name(&self, name: &str) -> Vec<&Patient> {
-        self.data
+    async fn find_by_name(&self, name: &str) -> Result<Vec<Patient>, PatientError> {
+        Ok(self
+            .data
             .iter()
-            .filter(|p| {
-                p.name.to_lowercase().contains(&name.to_lowercase()) && p.deleted_at.is_none()
-            })
-            .collect()
+            .filter(|p| p.name == name && p.deleted_at.is_none())
+            .map(|p| p.clone())
+            .collect())
     }
 
-    fn get_all(&self) -> Result<Vec<&Patient>, PatientError> {
+    async fn get_all(&self) -> Result<Vec<Patient>, PatientError> {
         Ok(self
             .data
             .iter()
             .filter(|p| p.deleted_at.is_none())
+            .map(|p| p.clone())
             .collect())
     }
 }

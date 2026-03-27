@@ -1,9 +1,7 @@
-use chrono::Utc;
-
 use super::*;
 
 impl PatientService {
-    pub fn create(&mut self, dto: CreatePatient) -> Result<(), PatientError> {
+    pub async fn create(&mut self, dto: CreatePatient) -> Result<(), PatientError> {
         let CreatePatient {
             birth_date,
             cpf,
@@ -12,7 +10,7 @@ impl PatientService {
             phone2,
         } = dto;
 
-        if self.repo.find_by_cpf(&cpf).is_some() {
+        if self.repo.find_by_cpf(&cpf).await?.is_some() {
             return Err(PatientError::CpfAlreadyInUse);
         }
 
@@ -28,7 +26,7 @@ impl PatientService {
             deleted_at: None,
         };
 
-        self.repo.save(&patient)?;
+        self.repo.save(&patient).await?;
 
         Ok(())
     }

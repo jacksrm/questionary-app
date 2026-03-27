@@ -1,5 +1,6 @@
 use chrono::{NaiveDate, Utc};
 
+use crate::application::patient::dto::update::UpdatePhone2Field;
 use crate::application::patient::repository::in_memory::InMemoryUserRepository;
 
 use super::*;
@@ -26,7 +27,7 @@ fn service_factory_clean() -> PatientService {
     service
 }
 
-fn service_factory_single() -> PatientService {
+async fn service_factory_single() -> PatientService {
     let mut repo = Box::new(InMemoryUserRepository::new());
     let patient = Patient {
         id: patient_id(1),
@@ -40,13 +41,13 @@ fn service_factory_single() -> PatientService {
         deleted_at: None,
     };
 
-    repo.save(&patient).unwrap();
+    repo.save(&patient).await.unwrap();
 
     let service = PatientService::new(repo);
     service
 }
 
-fn service_factory_many() -> PatientService {
+async fn service_factory_many() -> PatientService {
     let mut repo = Box::new(InMemoryUserRepository::new());
     for n in 0..100 {
         let patient = Patient {
@@ -62,7 +63,7 @@ fn service_factory_many() -> PatientService {
             deleted_at: None,
         };
 
-        repo.save(&patient).unwrap();
+        repo.save(&patient).await.unwrap();
     }
 
     let service = PatientService::new(repo);

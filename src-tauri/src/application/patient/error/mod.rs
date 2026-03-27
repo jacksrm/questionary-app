@@ -3,6 +3,7 @@ use serde::Serialize;
 #[derive(Debug, PartialEq)]
 pub enum PatientError {
     CpfAlreadyInUse,
+    NotFound,
     RepositoryError(String),
 }
 
@@ -27,6 +28,7 @@ pub enum UIError {
     InvalidIdField,
     CpfAlreadyInUse,
     RepositoryError(String),
+    PatientNotFound,
 }
 
 impl From<ValidationError> for UIError {
@@ -47,6 +49,7 @@ impl From<PatientError> for UIError {
         match error {
             PatientError::CpfAlreadyInUse => UIError::CpfAlreadyInUse,
             PatientError::RepositoryError(msg) => UIError::RepositoryError(msg),
+            PatientError::NotFound => UIError::PatientNotFound,
         }
     }
 }
@@ -54,4 +57,10 @@ impl From<PatientError> for UIError {
 #[derive(Serialize)]
 pub struct ResponseError {
     pub content: Vec<UIError>,
+}
+
+impl ResponseError {
+    pub fn new(errors: Vec<UIError>) -> Self {
+        ResponseError { content: errors }
+    }
 }

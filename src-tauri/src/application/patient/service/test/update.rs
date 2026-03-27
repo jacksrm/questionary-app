@@ -1,14 +1,18 @@
-use crate::application::patient::dto::update::UpdatePhone2Field;
-
 use super::*;
 
-#[test]
-fn should_be_able_to_update_a_patient() {
+#[tokio::test]
+async fn should_be_able_to_update_a_patient() {
     let phone2 = "(85) 99999-9999";
     let name = "Jacson Rodrigues";
 
-    let mut service = service_factory_single();
-    let to_update = service.repo.find_by_id(&patient_id(1)).unwrap().clone();
+    let mut service = service_factory_single().await;
+    let to_update = service
+        .repo
+        .find_by_id(&patient_id(1))
+        .await
+        .unwrap()
+        .unwrap()
+        .clone();
     let to_update_dto = UpdatePatient {
         id: patient_id(1),
         name: Some(name.to_string()),
@@ -18,7 +22,7 @@ fn should_be_able_to_update_a_patient() {
         phone2: Some(UpdatePhone2Field::Value(phone2.to_string())),
     };
 
-    let result = service.update(to_update_dto.clone()).unwrap();
+    let result = service.update(to_update_dto.clone()).await.unwrap();
 
     assert_eq!(name, result.name);
     assert_eq!(to_update.cpf, result.cpf);
@@ -27,9 +31,9 @@ fn should_be_able_to_update_a_patient() {
     assert_eq!(Some(phone2.to_string()), result.phone2);
 }
 
-#[test]
-fn should_return_an_error_if_cpf_is_already_registered() {
-    let mut service = service_factory_many();
+#[tokio::test]
+async fn should_return_an_error_if_cpf_is_already_registered() {
+    let mut service = service_factory_many().await;
     let to_update_dto = UpdatePatient {
         id: patient_id(1),
         name: None,
@@ -39,14 +43,14 @@ fn should_return_an_error_if_cpf_is_already_registered() {
         phone2: None,
     };
 
-    let result = service.update(to_update_dto.clone()).unwrap_err();
+    let result = service.update(to_update_dto.clone()).await.unwrap_err();
 
     assert_eq!(result, PatientError::CpfAlreadyInUse);
 }
 
-#[test]
-fn should_clear_the_phone2_field_if_requested() {
-    let mut service = service_factory_single();
+#[tokio::test]
+async fn should_clear_the_phone2_field_if_requested() {
+    let mut service = service_factory_single().await;
     let to_update_dto = UpdatePatient {
         id: patient_id(1),
         name: None,
@@ -56,7 +60,7 @@ fn should_clear_the_phone2_field_if_requested() {
         phone2: Some(UpdatePhone2Field::Clear),
     };
 
-    let result = service.update(to_update_dto.clone()).unwrap();
+    let result = service.update(to_update_dto.clone()).await.unwrap();
 
     assert_eq!(result.phone2, None);
 }

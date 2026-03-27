@@ -94,8 +94,8 @@ fn create_db_and_setup_many_deleted() -> InMemoryUserRepository {
     db
 }
 
-#[test]
-fn should_add_a_patient_to_db() {
+#[tokio::test]
+async fn should_add_a_patient_to_db() {
     let (mut db, _) = create_db_and_setup();
     let to_save = Patient {
         id: patient_id(2),
@@ -109,84 +109,84 @@ fn should_add_a_patient_to_db() {
         deleted_at: None,
     };
 
-    let result = db.save(&to_save).unwrap();
+    let result = db.save(&to_save).await.unwrap();
 
     assert_eq!(db.data.len(), 2);
     assert_eq!(result, ());
     assert_eq!(db.data[1].cpf, "789.456.123-01".to_string());
 }
 
-#[test]
-fn should_delete_a_patient() {
+#[tokio::test]
+async fn should_delete_a_patient() {
     let (mut db, _) = create_db_and_setup();
 
-    let result = db.delete(&patient_id(1)).unwrap();
+    let result = db.delete(&patient_id(1)).await.unwrap();
 
     assert!(result.deleted_at.is_some());
     assert_eq!(db.data.len(), 1);
 }
 
-#[test]
-fn should_retrieve_data_with_id() {
+#[tokio::test]
+async fn should_retrieve_data_with_id() {
     let (db, _) = create_db_and_setup();
-    let result = db.find_by_id(&patient_id(1));
+    let result = db.find_by_id(&patient_id(1)).await.unwrap();
 
     assert_ne!(result, None);
 }
 
-#[test]
-fn should_not_retrieve_data_with_id_if_it_is_deleted() {
+#[tokio::test]
+async fn should_not_retrieve_data_with_id_if_it_is_deleted() {
     let (mut db, _) = create_db_and_setup_deleted();
-    let result = db.find_by_id(&patient_id(1));
+    let result = db.find_by_id(&patient_id(1)).await.unwrap();
 
     assert_eq!(result, None);
 }
 
-#[test]
-fn should_retrieve_data_with_cpf() {
+#[tokio::test]
+async fn should_retrieve_data_with_cpf() {
     let (db, _) = create_db_and_setup();
-    let result = db.find_by_cpf(PATIENT_CPF);
+    let result = db.find_by_cpf(PATIENT_CPF).await.unwrap();
 
     assert_ne!(result, None);
 }
 
-#[test]
-fn should_not_retrieve_data_with_cpf_if_it_is_deleted() {
+#[tokio::test]
+async fn should_not_retrieve_data_with_cpf_if_it_is_deleted() {
     let (mut db, _) = create_db_and_setup_deleted();
-    let result = db.find_by_cpf(PATIENT_CPF);
+    let result = db.find_by_cpf(PATIENT_CPF).await.unwrap();
 
     assert_eq!(result, None);
 }
 
-#[test]
-fn should_retrieve_data_with_name() {
+#[tokio::test]
+async fn should_retrieve_data_with_name() {
     let db = create_db_and_setup_many();
-    let result = db.find_by_name("2");
+    let result = db.find_by_name("2").await.unwrap();
 
     assert_ne!(result.len(), 15);
 }
 
-#[test]
-fn should_not_retrieve_data_with_name_if_it_is_deleted() {
+#[tokio::test]
+async fn should_not_retrieve_data_with_name_if_it_is_deleted() {
     let db = create_db_and_setup_many_deleted();
-    let result = db.find_by_name("2");
+    let result = db.find_by_name("2").await.unwrap();
 
     assert_eq!(result.len(), 5);
 }
 
-#[test]
-fn should_retrieve_all_data() {
+#[tokio::test]
+async fn should_retrieve_all_data() {
     let db = create_db_and_setup_many();
-    let result = db.get_all();
+    let result = db.get_all().await;
 
     assert!(result.is_ok());
     assert_eq!(result.unwrap().len(), 50);
 }
 
-#[test]
-fn should_not_retrieve_deleted_data() {
+#[tokio::test]
+async fn should_not_retrieve_deleted_data() {
     let db = create_db_and_setup_many_deleted();
-    let result = db.get_all();
+    let result = db.get_all().await;
 
     assert!(result.is_ok());
     assert_eq!(result.unwrap().len(), 25);

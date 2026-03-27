@@ -1,11 +1,15 @@
 use uuid::Uuid;
 
 use crate::application::patient::dto::{
-    create::CreatePatient, get::GetPatientBy, update::UpdatePatient,
+    create::CreatePatient,
+    delete::DeletePatient,
+    get::GetPatientBy,
+    update::{UpdatePatient, UpdatePhone2Field},
 };
 use crate::application::patient::error::PatientError;
 use crate::application::patient::repository::PatientRepository;
 use crate::domain::patient::Patient;
+use chrono::Utc;
 
 pub struct PatientService {
     repo: Box<dyn PatientRepository>,

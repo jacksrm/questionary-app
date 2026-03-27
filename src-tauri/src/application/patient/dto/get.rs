@@ -4,7 +4,7 @@ use uuid::Uuid;
 use crate::application::patient::{error::ValidationError, validation::cpf::validate_cpf};
 
 #[derive(Deserialize)]
-#[serde(tag = "type", content = "value")]
+#[serde(tag = "type", content = "value", rename_all = "snake_case")]
 pub enum GetPatientByInput {
     Id(String),
     Cpf(String),
