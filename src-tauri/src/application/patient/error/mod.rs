@@ -5,6 +5,7 @@ pub enum PatientError {
     CpfAlreadyInUse,
     NotFound,
     RepositoryError(String),
+    ErrorConvertingDbEntity,
 }
 
 #[derive(Debug, PartialEq)]
@@ -29,6 +30,7 @@ pub enum UIError {
     CpfAlreadyInUse,
     RepositoryError(String),
     PatientNotFound,
+    ErrorConvertingDbEntity,
 }
 
 impl From<ValidationError> for UIError {
@@ -50,6 +52,7 @@ impl From<PatientError> for UIError {
             PatientError::CpfAlreadyInUse => UIError::CpfAlreadyInUse,
             PatientError::RepositoryError(msg) => UIError::RepositoryError(msg),
             PatientError::NotFound => UIError::PatientNotFound,
+            PatientError::ErrorConvertingDbEntity => UIError::ErrorConvertingDbEntity,
         }
     }
 }

@@ -3,12 +3,20 @@ import reactLogo from './assets/react.svg';
 import { invoke } from '@tauri-apps/api/core';
 import './App.css';
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState('');
-  const [num, setNum] = useState(0);
-  const [name, setName] = useState('');
+function maskCpf(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
 
-  const input = useMemo(
+  return digits
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{0,2})$/, '$1-$2');
+}
+
+function App() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [input, setInput] = useState('');
+
+  const patientDefault = useMemo(
     () => ({
       name: 'Jacson Rodrigues',
       cpf: '123.456.789-00',
@@ -19,51 +27,65 @@ function App() {
     [],
   );
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke('greet', { name }));
-  }
+  const clearPatients = () => {
+    setPatients([]);
+  };
 
-  async function sum(a: number, b: number) {
-    setNum(await invoke('sum', { a: Math.trunc(a), b: Math.trunc(b) }));
-  }
+  const getAll = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const result = await invoke<Patient[]>('get_all');
+    setPatients(result);
+  };
 
-  async function doSomethingStupid() {
-    await invoke('do_something_stupid', { input });
-  }
+  const getOne = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!input) return;
+    clearPatients();
+    let by: GetPatientByInput = {
+      type: 'cpf',
+      value: input,
+    };
+
+    if (input.length !== 11) {
+      by.type = 'id';
+    } else {
+      by.value = maskCpf(input);
+    }
+
+    const response = await invoke<Patient | null>('get_patient', { input: by });
+
+    setPatients(response ? [response] : []);
+  };
 
   return (
     <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-          doSomethingStupid();
-        }}>
+      <h1>Test UI</h1>
+      <button onClick={getAll} type="button">
+        Get All
+      </button>
+      <button type="button" onClick={(_) => clearPatients()}>
+        Clear
+      </button>
+      <div>
         <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg + ' ' + num}</p>
+        <button type="button" onClick={getOne}>
+          Get One
+        </button>
+      </div>
+      {patients.map((patient) => (
+        <div key={patient.id}>
+          <h2>{patient.name}</h2>
+          <p>ID: {patient.id}</p>
+          <p>CPF: {patient.cpf}</p>
+          <p>Phone 1: {patient.phone1}</p>
+          <p>Phone 2: {patient.phone2}</p>
+          <p>Birth Date: {patient.birth_date}</p>
+        </div>
+      ))}
     </main>
   );
 }

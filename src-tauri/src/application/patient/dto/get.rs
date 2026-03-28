@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use uuid::Uuid;
 
-use crate::application::patient::{error::ValidationError, validation::cpf::validate_cpf};
+use crate::application::patient::{error::ValidationError, validation::cpf::correct_cpf_mask};
 
 #[derive(Deserialize)]
 #[serde(tag = "type", content = "value", rename_all = "snake_case")]
@@ -19,7 +19,7 @@ impl GetPatientBy {
     pub fn new(input: GetPatientByInput) -> Result<Self, ValidationError> {
         match input {
             GetPatientByInput::Cpf(c) => {
-                if !validate_cpf(&c) {
+                if !correct_cpf_mask(&c) {
                     return Err(ValidationError::InvalidCpfField);
                 }
 

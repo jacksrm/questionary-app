@@ -5,16 +5,16 @@ async fn should_be_able_to_update_a_patient() {
     let phone2 = "(85) 99999-9999";
     let name = "Jacson Rodrigues";
 
-    let mut service = service_factory_single().await;
+    let service = service_factory().await;
     let to_update = service
         .repo
-        .find_by_id(&patient_id(1))
+        .find_by_id(&patient_id(0))
         .await
         .unwrap()
         .unwrap()
         .clone();
     let to_update_dto = UpdatePatient {
-        id: patient_id(1),
+        id: patient_id(0),
         name: Some(name.to_string()),
         birth_date: None,
         cpf: None,
@@ -33,12 +33,12 @@ async fn should_be_able_to_update_a_patient() {
 
 #[tokio::test]
 async fn should_return_an_error_if_cpf_is_already_registered() {
-    let mut service = service_factory_many().await;
+    let service = service_factory().await;
     let to_update_dto = UpdatePatient {
-        id: patient_id(1),
+        id: patient_id(2),
         name: None,
         birth_date: None,
-        cpf: Some(patient_cpf(5)),
+        cpf: Some(PATIENT_CPF.to_string()),
         phone1: None,
         phone2: None,
     };
@@ -50,9 +50,9 @@ async fn should_return_an_error_if_cpf_is_already_registered() {
 
 #[tokio::test]
 async fn should_clear_the_phone2_field_if_requested() {
-    let mut service = service_factory_single().await;
+    let service = service_factory().await;
     let to_update_dto = UpdatePatient {
-        id: patient_id(1),
+        id: patient_id(0),
         name: None,
         birth_date: None,
         cpf: None,

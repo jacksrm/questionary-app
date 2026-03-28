@@ -1,7 +1,7 @@
 use super::*;
 
 impl PatientService {
-    pub async fn update(&mut self, dto: UpdatePatient) -> Result<Patient, PatientError> {
+    pub async fn update(&self, dto: UpdatePatient) -> Result<Patient, PatientError> {
         let UpdatePatient {
             id,
             birth_date,

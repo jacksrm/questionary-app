@@ -1,71 +1,51 @@
-use chrono::{NaiveDate, Utc};
+use chrono::NaiveDate;
 
-use crate::application::patient::dto::update::UpdatePhone2Field;
-use crate::application::patient::repository::in_memory::InMemoryUserRepository;
+use crate::application::patient::{
+    dto::update::UpdatePhone2Field, repository::sqlite::SqlitePatientRepository,
+};
 
 use super::*;
 
-const PATIENT_NAME: &str = "John Doe";
-const PATIENT_CPF: &str = "123.456.789-00";
-const PATIENT_PHONE1: &str = "(85) 98765-4321";
-const PATIENT_PHONE2: &str = "(85) 98765-4322";
-const PATIENT_BIRTH_DATE: &str = "1988-02-26";
+const PATIENT_NAME: &str = "Patient 0";
+const PATIENT_CPF: &str = "444.896.358-69";
+const PATIENT_CPF_NON_EXISTENT: &str = "123.456.789-09";
+const PATIENT_PHONE1: &str = "(85) 90000-0000";
+const PATIENT_BIRTH_DATE: &str = "2000-01-01";
 const PATIENT_BIRTH_DATE_FMT: &str = "%Y-%m-%d";
+
+const DB_VALID_PATIENT_COUNT: usize = 25;
+const _DB_TOTAL_PATIENT_COUNT: usize = 50;
 
 fn patient_id(n: u128) -> Uuid {
     Uuid::from_u128(n)
 }
 
-fn patient_cpf(end: u128) -> String {
-    format!("123.456.789-{:02}", end)
+fn new_create_patient() -> CreatePatient {
+    CreatePatient {
+        name: "Patient 50".to_string(),
+        cpf: PATIENT_CPF_NON_EXISTENT.to_string(),
+        birth_date: NaiveDate::parse_from_str(PATIENT_BIRTH_DATE, PATIENT_BIRTH_DATE_FMT).unwrap(),
+        phone1: PATIENT_PHONE1.to_string(),
+        phone2: None,
+    }
 }
 
-fn service_factory_clean() -> PatientService {
-    let repo = Box::new(InMemoryUserRepository::new());
-    let service = PatientService::new(repo);
-
-    service
-}
-
-async fn service_factory_single() -> PatientService {
-    let mut repo = Box::new(InMemoryUserRepository::new());
-    let patient = Patient {
-        id: patient_id(1),
+fn new_create_patient_existing_cpf() -> CreatePatient {
+    CreatePatient {
         name: PATIENT_NAME.to_string(),
         cpf: PATIENT_CPF.to_string(),
-        phone1: PATIENT_PHONE1.to_string(),
-        phone2: Some(PATIENT_PHONE2.to_string()),
         birth_date: NaiveDate::parse_from_str(PATIENT_BIRTH_DATE, PATIENT_BIRTH_DATE_FMT).unwrap(),
-        created_at: Utc::now(),
-        updated_at: Utc::now(),
-        deleted_at: None,
-    };
-
-    repo.save(&patient).await.unwrap();
-
-    let service = PatientService::new(repo);
-    service
+        phone1: PATIENT_PHONE1.to_string(),
+        phone2: None,
+    }
 }
 
-async fn service_factory_many() -> PatientService {
-    let mut repo = Box::new(InMemoryUserRepository::new());
-    for n in 0..100 {
-        let patient = Patient {
-            id: patient_id(n),
-            name: format!("{}{}", PATIENT_NAME, n),
-            cpf: patient_cpf(n),
-            phone1: PATIENT_PHONE1.to_string(),
-            phone2: Some(PATIENT_PHONE2.to_string()),
-            birth_date: NaiveDate::parse_from_str(PATIENT_BIRTH_DATE, PATIENT_BIRTH_DATE_FMT)
-                .unwrap(),
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
-            deleted_at: None,
-        };
+fn database_url() -> String {
+    format!("sqlite://file:{}?mode=memory&cache=shared", Uuid::new_v4())
+}
 
-        repo.save(&patient).await.unwrap();
-    }
-
+async fn service_factory() -> PatientService {
+    let repo = Box::new(SqlitePatientRepository::new(&database_url()).await.unwrap());
     let service = PatientService::new(repo);
 
     service

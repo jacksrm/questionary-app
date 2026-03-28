@@ -1,15 +1,14 @@
-use chrono::{NaiveDate, Utc};
 use uuid::Uuid;
 
 use crate::{
     application::patient::{
         controller::PatientController,
         dto::{
-            create::CreatePatientInput,
-            get::{GetPatientBy, GetPatientByInput},
+            create::CreatePatientInput, delete::DeletePatientInput, get::GetPatientByInput,
+            update::UpdatePatientInput,
         },
-        error::{ResponseError, UIError},
-        repository::{in_memory::InMemoryUserRepository, PatientRepository},
+        error::ResponseError,
+        repository::sqlite::SqlitePatientRepository,
         service::PatientService,
     },
     domain::patient::Patient,
@@ -33,22 +32,8 @@ pub struct PatientModule {
 
 impl PatientModule {
     pub async fn new() -> Self {
-        let mut repo = Box::new(InMemoryUserRepository::new());
-
-        for n in 0..100 {
-            let patient = Patient {
-                id: Uuid::from_u128(n),
-                name: format!("Geraldo Mendonça{}", n),
-                cpf: format!("123.456.789-{:02}", n),
-                phone1: "(85) 99999-9999".to_string(),
-                phone2: Some("(85) 99999-9999".to_string()),
-                birth_date: NaiveDate::parse_from_str("1980-01-01", "%Y-%m-%d").unwrap(),
-                created_at: Utc::now(),
-                updated_at: Utc::now(),
-                deleted_at: None,
-            };
-            repo.save(&patient).await.unwrap();
-        }
+        let database_url = format!("sqlite://file:{}?mode=memory&cache=shared", Uuid::new_v4());
+        let repo = Box::new(SqlitePatientRepository::new(&database_url).await.unwrap());
 
         let service = PatientService::new(repo);
         let controller = PatientController::new(service);
@@ -69,4 +54,28 @@ pub async fn get_patient(
     state: tauri::State<'_, PatientModule>,
 ) -> Result<Option<Patient>, ResponseError> {
     state.controller.get(input).await
+}
+
+#[tauri::command]
+pub async fn delete(
+    input: DeletePatientInput,
+    state: tauri::State<'_, PatientModule>,
+) -> Result<Patient, ResponseError> {
+    state.controller.delete(input).await
+}
+
+#[tauri::command]
+pub async fn create(
+    input: CreatePatientInput,
+    state: tauri::State<'_, PatientModule>,
+) -> Result<(), ResponseError> {
+    state.controller.create(input).await
+}
+
+#[tauri::command]
+pub async fn update(
+    input: UpdatePatientInput,
+    state: tauri::State<'_, PatientModule>,
+) -> Result<Patient, ResponseError> {
+    state.controller.update(input).await
 }

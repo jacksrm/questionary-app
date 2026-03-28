@@ -1,4 +1,4 @@
-fn correct_cpf_mask(cpf: &str) -> bool {
+pub fn correct_cpf_mask(cpf: &str) -> bool {
     let chars: Vec<char> = cpf.chars().collect();
 
     if chars.len() != 14 {
