@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@layer components {
+  .tabs-trigger {
+    @apply px-2 data-[state=active]:bg-sky-600 data-[state=active]:text-gray-50 transition-colors duration-200 rounded-md;
+  }
+
+  .tabs-content-input {
+    @apply p-1 focus:pl-3 placeholder:italic outline-0 transition-[padding] duration-100 grow border-b-2 border-sky-600;
+  }
+
+  .search-menu-button {
+    @apply bg-sky-600 p-2 text-gray-50 hover:brightness-90 transition-[brightness] duration-200 cursor-pointer rounded-full;
+  }
+
+  .tabs-content-form {
+    @apply flex text-lg min-w-max gap-2;
+  }
+}

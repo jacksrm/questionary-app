@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@layer components {
+  .card {
+    @apply p-1 m-2 min-w-50 rounded-md flex flex-col gap-2 shadow-[0px_0px_5px_0px_rgba(0,0,0,0.30)];
+  }
+
+  .card-table-item {
+    @apply flex flex-col grow w-40 min-w-max;
+  }
+
+  .card-table-heading {
+    @apply font-semibold text-center;
+  }
+
+  .card-table-content {
+    @apply text-center font-light;
+  }
+}
