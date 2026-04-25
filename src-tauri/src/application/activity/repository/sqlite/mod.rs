@@ -34,3 +34,6 @@ impl ActivityRepository for SqliteActivityRepository {
         todo!()
     }
 }
+
+#[cfg(test)]
+mod test;
